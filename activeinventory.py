@@ -30,3 +30,9 @@ class Entity:
     def set_size(self, size):
         print(f"Size was changed from {self._size} to {size}.")
         self._size = size
+
+class Inventory(Entity):
+    def __init__(self,slots = 0, objects = dict(), **kwargs):
+        Entity.__init__(self, kwargs)
+        self._slots = slots
+        self._objects = objects
