@@ -45,3 +45,25 @@ class Inventory():
         pass
     def remove_object(self, object, count = 1):
         pass
+
+class Attributes:
+    default_attributes = {"Str":10,
+                          "Con":10,
+                          "Dex":10,
+                          "Int":10,
+                          "Wis":10,
+                          "Cha":10}
+    def __init__(self, attributes = Attributes.default_attributes):
+        self._attributes = attributes
+
+class Creature(Entity, Attributes):
+    creature_bulk_dict = {"Tiny":5,
+                          "Small":10,
+                          "Medium":20,
+                          "Large":40,
+                          "Huge":80,
+                          "Gargantuan":160}
+    def __init__(self, **kwargs):
+        Entity.__init__(self,kwargs)
+        Attributes.__init__(self, kwargs)
+        self._bulk = self.creature_bulk_dict[self._size]
