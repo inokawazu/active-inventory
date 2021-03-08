@@ -57,3 +57,9 @@ class Object:
 
     def __hash__(self):
         return hash((self.name,self.bulk, self.price._value))
+
+    def __eq__(self, other):
+        return (self.name,self.bulk, self.price._value) == (other.name,other.bulk, other.price._value)
+
+test_obj = Object(name = "test", bulk = 30, price = Price({"cp":0,"sp":69,"ep":0,"gp":0,"pp":0}))
+test_inv = Inventory(slots = 100)
