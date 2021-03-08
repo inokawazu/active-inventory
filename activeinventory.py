@@ -16,7 +16,7 @@ class Entity:
     def get_condition(self):
         return self._condition
     def get_size(self):
-        return self.get_size
+        return self._size
 
     def set_name(self, name):
         print(f"Name was changed from {self._name} to {name}.")
@@ -32,7 +32,7 @@ class Entity:
         self._size = size
 
 class Inventory():
-    def __init__(self,slots = 0, objects = dict()):
+    def __init__(self, slots = 0, objects = dict()):
         self._slots = slots
         self._objects = objects
 
@@ -53,8 +53,6 @@ class Attributes:
                           "Int":10,
                           "Wis":10,
                           "Cha":10}
-    def __init__(self, attributes = Attributes.default_attributes):
-        self._attributes = attributes
 
 class Creature(Entity, Attributes):
     creature_bulk_dict = {"Tiny":5,
@@ -63,7 +61,13 @@ class Creature(Entity, Attributes):
                           "Large":40,
                           "Huge":80,
                           "Gargantuan":160}
-    def __init__(self, **kwargs):
-        Entity.__init__(self,kwargs)
-        Attributes.__init__(self, kwargs)
+    def __init__(self, attr = Attributes.default_attributes, **kwargs):
+        Entity.__init__(self, kwargs)
+        self.attributes = attr
         self._bulk = self.creature_bulk_dict[self._size]
+
+        default_slots = Creature.creature_bulk_dict[self._size] + max(attr["Str"],attr["Con"])
+        self._inventory = Inventory(slots = default_slots)
+
+test_creature = Creature()
+test_inventory = Inventory()
