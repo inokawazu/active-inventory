@@ -1,73 +1,17 @@
-# Entity
-class Entity:
-    def __init__(self, name = "unknown",
-                 location = "nowhere",
-                 condition = "fine",
-                 size = "Medium"):
-        self._name = name
-        self._location = location
-        self._condition = condition
-        self._size = size
+import price
 
-    def get_name(self):
-        return self._name
-    def get_location(self):
-        return self._location
-    def get_condition(self):
-        return self._condition
-    def get_size(self):
-        return self._size
+class User:
+    def __init__(self, name = "demo"):
+        self.name=name
 
-    def set_name(self, name):
-        print(f"Name was changed from {self._name} to {name}.")
-        self._name = name
-    def set_location(self, location):
-        print(f"Location was moved from {self._location} to {location}.")
-        self._location = location
-    def set_condition(self, condition):
-        print(f"Condition was changed from {self._condition} to {condition}.")
-        self._condition = condition
-    def set_size(self, size):
-        print(f"Size was changed from {self._size} to {size}.")
-        self._size = size
+class Inventory:
+    def __init__(self, slots = 0):
+        self.slots = slots
+        self.objects = dict()
 
-class Inventory():
-    def __init__(self, slots = 0, objects = dict()):
-        self._slots = slots
-        self._objects = objects
+class Object:
+    def __init__(self, name = "demo", bulk = 0, price = price.zero()):
+        self.name = name
+        self.bulk = bulk
+        self.price = price
 
-    def get_slots(self):
-        return self._slots
-    def get_objects(self):
-        return self._objects
-
-    def add_object(self, object, count = 1):
-        pass
-    def remove_object(self, object, count = 1):
-        pass
-
-class Attributes:
-    default_attributes = {"Str":10,
-                          "Con":10,
-                          "Dex":10,
-                          "Int":10,
-                          "Wis":10,
-                          "Cha":10}
-
-class Creature(Entity, Attributes):
-    creature_bulk_dict = {"Tiny":5,
-                          "Small":10,
-                          "Medium":20,
-                          "Large":40,
-                          "Huge":80,
-                          "Gargantuan":160}
-    def __init__(self, attr = Attributes.default_attributes, **kwargs):
-        Entity.__init__(self, kwargs)
-        self.attributes = attr
-        self._bulk = self.creature_bulk_dict[self._size]
-
-        default_slots = Creature.creature_bulk_dict[self._size] + max(attr["Str"],attr["Con"])
-        self._inventory = Inventory(slots = default_slots)
-
-test_creature = Creature()
-test_inventory = Inventory()
