@@ -14,7 +14,7 @@ class Inventory:
                 self.objects[obj] += amount
             else:
                 self.objects[obj] = amount
-            print(f"You have {self.objects[obj]} {obj}(s)")
+                print(f"You have {self.objects[obj]} {obj}(s)")
         else:
             print(f"You don't have enough room to fit {self.objects[obj]} {obj}(s)")
 
@@ -44,10 +44,33 @@ class Inventory:
 def worthless_amount():
     return Price(price = {"cp":0,"sp":0,"ep":0,"gp":0,"pp":0})
 
+def price_to_string(price_str):
+    price = worthless_amount()
+    for demonination in price.price.keys():
+        if demonination in price_str:
+            extracted_price = price_str.replace(demonination, "")
+            price.price[demonination] = int(extracted_price)
+            break
+    return price
+
 class Price:
     def __init__(self, price):
         self.price = price
         self._value = price["cp"]*1 + price["sp"]*10 + price["ep"]*50 + price["gp"]*100 + price["pp"]*1_000
+
+    def __add__(self, other):
+        plus_price_dict = {k:(self.price[k] + other.price[k]) for k in self.price.keys()}
+        return Price(price = plus_price_dict)
+
+    def __str__(self):
+        price_str = ""
+
+        for denomination, amount in self.price.items():
+            if amount > 0:
+                price_str += str(amount)
+                price_str += denomination
+
+        return price_str
 
 class Object:
     def __init__(self, name = "demo", bulk = 0, price = worthless_amount()):
