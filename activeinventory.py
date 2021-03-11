@@ -1,6 +1,5 @@
-class User:
-    def __init__(self, name = "demo"):
-        self.name=name
+import discord
+from discord.ext import commands
 
 class Inventory:
 
@@ -40,6 +39,11 @@ class Inventory:
     def change_slots(self, slot_change):
         self.slots += slot_change
         print(f"You have {self.slots} now!")
+
+class Character(Inventory):
+    def __init__(self, name = "demo", **kwargs):
+        Inventory.__init__(self, kwargs)
+        self.name=name
 
 def worthless_amount():
     return Price(price = {"cp":0,"sp":0,"ep":0,"gp":0,"pp":0})
@@ -86,3 +90,6 @@ class Object:
 
 test_obj = Object(name = "test", bulk = 30, price = Price({"cp":0,"sp":69,"ep":0,"gp":0,"pp":0}))
 test_inv = Inventory(slots = 100)
+
+#############START BOT#############################################
+commands.Bot(command_prefix='>')
