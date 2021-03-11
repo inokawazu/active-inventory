@@ -105,3 +105,6 @@ async def on_message(message):
 
     if message.content.startswith('>hello'):
         await message.channel.send('Hello!')
+
+    if message.message.startswith('>h'):
+        await message.channel.send("I am a bot to help manage inventories of D&D characters!") #TODO Make a separate 'big string' for help.
