@@ -1,6 +1,4 @@
-import discord
-from discord.ext import commands
-
+# Inventory
 class Inventory:
 
     def __init__(self, slots = 0):
@@ -92,4 +90,10 @@ test_obj = Object(name = "test", bulk = 30, price = Price({"cp":0,"sp":69,"ep":0
 test_inv = Inventory(slots = 100)
 
 #############START BOT#############################################
-commands.Bot(command_prefix='>')
+import discord
+
+client = discord.Client()
+
+@client.event
+async def on_ready():
+    print('Active Inventory Bot ONLINE as {0.user} and ready 🤖'.format(client))
