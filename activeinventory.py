@@ -91,24 +91,31 @@ test_inv = Inventory(slots = 100)
 
 #############START BOT#############################################
 import discord
+from discord.ext import commands
 
-client = discord.Client()
+description = '''An example bot to showcase the discord.ext.commands extension
+module.
+There are a number of utility commands being showcased here.'''
 
-@client.event
-async def on_ready():
-    print('Active Inventory Bot ONLINE as {0.user} and ready 🤖'.format(client))
+intents = discord.Intents.default()
+intents.members = True
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+bot = commands.Bot(command_prefix='?', description=description, intents=intents)
 
-    if message.content.startswith('>hello'):
-        await message.channel.send('Hello!')
+# @client.event
+# async def on_ready():
+#     print('Active Inventory Bot ONLINE as {0.user} and ready 🤖'.format(client))
 
-    if message.message.startswith('>h'):
-        await message.channel.send("I am a bot to help manage inventories of D&D characters!") #TODO Make a separate 'big string' for help.
+# @client.event
+# async def on_message(message):
+#     if message.author == client.user:
+#         return
 
+#     if message.content.startswith('>hello'):
+#         await message.channel.send('Hello!')
+
+#     if message.message.startswith('>h'):
+#         await message.channel.send("I am a bot to help manage inventories of D&D characters!") #TODO Make a separate 'big string' for help.
 
 #>start - makes character
 
