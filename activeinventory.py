@@ -38,56 +38,55 @@ class Inventory:
         self.slots += slot_change
         print(f"You have {self.slots} now!")
 
+#Character
 class Character(Inventory):
     def __init__(self, name = "demo", **kwargs):
         Inventory.__init__(self, kwargs)
         self.name=name
 
-def worthless_amount():
-    return Price(price = {"cp":0,"sp":0,"ep":0,"gp":0,"pp":0})
+#Price
+denomination_values = {"cp":1, "sp":10, "ep":50, "gp":100, "pp":1_000}
 
-def price_to_string(price_str):
-    price = worthless_amount()
-    for demonination in price.price.keys():
-        if demonination in price_str:
-            extracted_price = price_str.replace(demonination, "")
-            price.price[demonination] = int(extracted_price)
-            break
-    return price
+def parse_price_str(price_str):
+    for denomination in denomination_values.keys():
+        if denomination in price_str:
+            return (int(price_str.replace(denomination, "")), denomination)
+    else:
+        return 0, "cp"
 
 class Price:
-    def __init__(self, price):
-        self.price = price
-        self._value = price["cp"]*1 + price["sp"]*10 + price["ep"]*50 + price["gp"]*100 + price["pp"]*1_000
+    def __init__(self, price_str = "0"):
+        price_str = price_str.strip()
 
-    def __add__(self, other):
-        plus_price_dict = {k:(self.price[k] + other.price[k]) for k in self.price.keys()}
-        return Price(price = plus_price_dict)
+        if price_str == "0":
+            self.amount, self.denomination = 0, "cp"
+        else:
+            self.amount, self.denomination = parse_price_str(price_str)
 
     def __str__(self):
-        price_str = ""
+        return str(self.amount) + str(self.denomination)
 
-        for denomination, amount in self.price.items():
-            if amount > 0:
-                price_str += str(amount)
-                price_str += denomination
-
-        return price_str
-
+# Object
 class Object:
-    def __init__(self, name = "demo", bulk = 0, price = worthless_amount()):
+    def __init__(self, name = "demo", bulk = 0, price = "0"):
         self.name = name
         self.bulk = bulk
-        self.price = price
+        self.price = Price(price)
 
     def __hash__(self):
-        return hash((self.name,self.bulk, self.price._value))
+        return hash((self.name,self.bulk, str(self.price)))
 
     def __eq__(self, other):
-        return (self.name,self.bulk, self.price._value) == (other.name,other.bulk, other.price._value)
+        return (self.name,self.bulk, str(self.price)) == (other.name,other.bulk, str(other.price))
 
-test_obj = Object(name = "test", bulk = 30, price = Price({"cp":0,"sp":69,"ep":0,"gp":0,"pp":0}))
+# test_obj = Object(name = "test", bulk = 30, price = Price({"cp":0,"sp":69,"ep":0,"gp":0,"pp":0}))
 test_inv = Inventory(slots = 100)
+
+
+
+
+
+
 
 #############START BOT#############################################
 import discord
@@ -107,11 +106,18 @@ async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
-    print('------')
+    print('---🤖---')
+
+@bot.command()
+async def start(ctx):
+    #Checks if invoker is not in the current list of character
+    #   If already there, the function send an error
+    #Adds the invoker to the list.
+    pass
 
 # @client.event
 # async def on_ready():
-#     print('Active Inventory Bot ONLINE as {0.user} and ready 🤖'.format(client))
+#     print('Active Inventory Bot ONLINE as {0.user} and ready '.format(client))
 
 # @client.event
 # async def on_message(message):
