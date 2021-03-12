@@ -66,6 +66,9 @@ class Price:
     def __str__(self):
         return str(self.amount) + str(self.denomination)
 
+    def __repr__(self):
+        return f"Price(amount={self.amount},denomination={self.denomination})"
+
 # Object
 class Object:
     def __init__(self, name = "demo", bulk = 0, price = "0"):
@@ -79,13 +82,8 @@ class Object:
     def __eq__(self, other):
         return (self.name,self.bulk, str(self.price)) == (other.name,other.bulk, str(other.price))
 
-# test_obj = Object(name = "test", bulk = 30, price = Price({"cp":0,"sp":69,"ep":0,"gp":0,"pp":0}))
+test_obj = Object(name = "test", bulk = 30, price="69sp")
 test_inv = Inventory(slots = 100)
-
-
-
-
-
 
 
 #############START BOT#############################################
