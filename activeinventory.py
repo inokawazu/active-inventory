@@ -102,6 +102,13 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='>', description=description, intents=intents)
 
+@bot.event
+async def on_ready():
+    print('Logged in as')
+    print(bot.user.name)
+    print(bot.user.id)
+    print('------')
+
 # @client.event
 # async def on_ready():
 #     print('Active Inventory Bot ONLINE as {0.user} and ready 🤖'.format(client))
