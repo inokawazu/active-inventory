@@ -11,22 +11,22 @@ class Inventory:
                 self.objects[obj] += amount
             else:
                 self.objects[obj] = amount
-                print(f"You have {self.objects[obj]} {obj}(s)")
+                return f"You have {self.objects[obj]} {obj}(s)"
         else:
-            print(f"You don't have enough room to fit {self.objects[obj]} {obj}(s)")
+            return f"You don't have enough room to fit {self.objects[obj]} {obj}(s)"
 
     def remove_object(self, obj, amount = 1):
         if obj in self.objects.keys():
             if self.objects[obj] > amount:
                 self.objects[obj] -= amount
-                print(f"You have {self.objects[obj]} {obj}(s)")
+                return f"You have {self.objects[obj]} {obj}(s)"
             elif self.objects[obj] == amount:
                 self.objects.pop(obj)
-                print(f"You have no more {obj}s")
+                return f"You have no more {obj}s"
             else:
-                print(f"You don't have at least {self.objects[obj]} {obj}(s)")
+                return f"You don't have at least {self.objects[obj]} {obj}(s)"
         else:
-            print(f"You don't have any {obj} at all in the first place!")
+            return f"You don't have any {obj} at all in the first place!"
 
     def get_object_bulk(self):
         output_bulk = 0
@@ -82,6 +82,9 @@ class Object:
     def __eq__(self, other):
         return (self.name,self.bulk, str(self.price)) == (other.name,other.bulk, str(other.price))
 
+    def __str__(self):
+        return self.name
+
 test_obj = Object(name = "test", bulk = 30, price="69sp")
 test_inv = Inventory(slots = 100)
 
@@ -115,6 +118,14 @@ def change_user_slots(username, new_slots):
             return "Success"
     return "Not Found"
 
+def give_user_object(username, obj:Object, amount):
+    global users
+    for user in users:
+        if username == user.name:
+            return user.add_object(obj, amount)
+    else:
+        return f"{username} was not found."
+
 intents = discord.Intents.default()
 intents.members = True
 
@@ -140,5 +151,19 @@ async def newslots(ctx,new_amount):
         else:
             change_user_slots(ctx.author, new_amount_int)
         await ctx.send(f"{ctx.author} now has {new_amount_int} slots.")
+    except Exception as e:
+        await ctx.send(e)
+        await ctx.send(f"You need to write the command as {bot.command_prefix}newslots <new amount of slots>")
+
+@bot.command()
+async def add(ctx, item_amount, item_name, slots_per_item, worth_per_item):
+    try:
+        item_amount_int = int(item_amount)
+        slots_per_item_int = int(slots_per_item)
+        if not is_added_user(ctx.author):
+            await ctx.send(f"Please use the {bot.command_prefix}newslots first.")
+        else:
+            obj_to_give = Object(name=item_name, bulk=slots_per_item_int,price=worth_per_item)
+            await ctx.send(give_user_object(ctx.author, obj_to_give, item_amount_int))
     except:
-        ctx.send(f"You need to write the command as {bot.command_prefix} <new amount of slots>")
+        await ctx.send(f"You need to write the command as {bot.command_prefix}<new amount of slots>")
