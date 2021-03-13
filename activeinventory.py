@@ -85,7 +85,6 @@ class Object:
 test_obj = Object(name = "test", bulk = 30, price="69sp")
 test_inv = Inventory(slots = 100)
 
-
 #############START BOT#############################################
 import discord
 from discord.ext import commands
@@ -93,6 +92,28 @@ from discord.ext import commands
 description = '''
 This bot keeps track of player inventories using the active-inventory system.
 '''
+
+users = []
+
+def add_user(username, slots):
+    global users
+    users.append(Character(name = username, slots = slots))
+
+def is_added_user(username):
+    global users
+    for user in users:
+        if username == user.name:
+            return True
+    else:
+        return False
+
+def change_user_slots(username, new_slots):
+    global users
+    for user in users:
+        if username == user.name:
+            user.slots = new_slots
+            return "Success"
+    return "Not Found"
 
 intents = discord.Intents.default()
 intents.members = True
@@ -106,33 +127,18 @@ async def on_ready():
     print(bot.user.id)
     print('---🤖---')
 
+@bot.event
+async def on_command(ctx):
+    print(f"{ctx.author} has used {ctx.command} in {ctx.channel}")
+
 @bot.command()
-async def start(ctx):
-    #Checks if invoker is not in the current list of character
-    #   If already there, the function send an error
-    #Adds the invoker to the list.
-    pass
-
-# @client.event
-# async def on_ready():
-#     print('Active Inventory Bot ONLINE as {0.user} and ready '.format(client))
-
-# @client.event
-# async def on_message(message):
-#     if message.author == client.user:
-#         return
-
-#     if message.content.startswith('>hello'):
-#         await message.channel.send('Hello!')
-
-#     if message.message.startswith('>h'):
-#         await message.channel.send("I am a bot to help manage inventories of D&D characters!") #TODO Make a separate 'big string' for help.
-
-#>start - makes character
-
-#>inv
-#>inventory - displays character inventory
-
-#>give <item> [amount]
-
-#>take <item> [amount]
+async def newslots(ctx,new_amount):
+    try:
+        new_amount_int = int(new_amount)
+        if not is_added_user(ctx.author):
+            add_user(ctx.author, new_amount_int)
+        else:
+            change_user_slots(ctx.author, new_amount_int)
+        await ctx.send(f"{ctx.author} now has {new_amount_int} slots.")
+    except:
+        ctx.send(f"You need to write the command as {bot.command_prefix} <new amount of slots>")
