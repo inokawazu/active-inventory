@@ -11,9 +11,9 @@ class Inventory:
                 self.objects[obj] += amount
             else:
                 self.objects[obj] = amount
-                return f"You have {self.objects[obj]} {obj}(s)"
+            return f"You have {self.objects[obj]} {obj}(s)"
         else:
-            return f"You don't have enough room to fit {self.objects[obj]} {obj}(s)"
+            return f"You don't have enough room to fit {amount} {obj}(s)"
 
     def remove_object(self, obj, amount = 1):
         if obj in self.objects.keys():
@@ -40,8 +40,8 @@ class Inventory:
 
 #Character
 class Character(Inventory):
-    def __init__(self, name = "demo", **kwargs):
-        Inventory.__init__(self, kwargs)
+    def __init__(self, name = "demo", slots=0):
+        Inventory.__init__(self, slots=slots)
         self.name=name
 
 #Price
@@ -98,33 +98,31 @@ This bot keeps track of player inventories using the active-inventory system.
 
 users = []
 
-def add_user(username, slots):
+def add_user(username, new_slots:int):
     global users
-    users.append(Character(name = username, slots = slots))
+    users.append(Character(name = username, slots = new_slots))
 
-def is_added_user(username):
+def is_added_user(author):
     global users
     for user in users:
-        if username == user.name:
+        if author == user.name:
             return True
-    else:
-        return False
+    return False
 
-def change_user_slots(username, new_slots):
+def change_user_slots(author, new_slots):
     global users
     for user in users:
-        if username == user.name:
+        if author == user.name:
             user.slots = new_slots
             return "Success"
-    return "Not Found"
+    return f"{author.nick} was not found."
 
-def give_user_object(username, obj:Object, amount):
+def give_user_object(author, obj:Object, amount):
     global users
     for user in users:
-        if username == user.name:
+        if author == user.name:
             return user.add_object(obj, amount)
-    else:
-        return f"{username} was not found."
+    return f"{author.nick} was not found."
 
 intents = discord.Intents.default()
 intents.members = True
@@ -142,28 +140,26 @@ async def on_ready():
 async def on_command(ctx):
     print(f"{ctx.author} has used {ctx.command} in {ctx.channel}")
 
-@bot.command()
-async def newslots(ctx,new_amount):
+@bot.command(name='slots')
+async def change_slots(ctx, new_slots:int):
     try:
-        new_amount_int = int(new_amount)
         if not is_added_user(ctx.author):
-            add_user(ctx.author, new_amount_int)
+            add_user(ctx.author, new_slots)
         else:
-            change_user_slots(ctx.author, new_amount_int)
-        await ctx.send(f"{ctx.author} now has {new_amount_int} slots.")
+            change_user_slots(ctx.author, new_slots)
+        await ctx.send(f"{ctx.author} now has {new_slots} slots.")
     except Exception as e:
-        await ctx.send(e)
-        await ctx.send(f"You need to write the command as {bot.command_prefix}newslots <new amount of slots>")
+        print(e.with_traceback(None))
+        await ctx.send(f"You need to write the command as {bot.command_prefix}slots <new amount of slots>")
 
-@bot.command()
-async def add(ctx, item_amount, item_name, slots_per_item, worth_per_item):
+@bot.command(name='add')
+async def add_item(ctx, item_amount:int, item_name, bulk_per_item:int, worth_per_item):
     try:
-        item_amount_int = int(item_amount)
-        slots_per_item_int = int(slots_per_item)
         if not is_added_user(ctx.author):
             await ctx.send(f"Please use the {bot.command_prefix}newslots first.")
         else:
-            obj_to_give = Object(name=item_name, bulk=slots_per_item_int,price=worth_per_item)
-            await ctx.send(give_user_object(ctx.author, obj_to_give, item_amount_int))
-    except:
-        await ctx.send(f"You need to write the command as {bot.command_prefix}<new amount of slots>")
+            obj_to_give = Object(name=item_name, bulk=bulk_per_item, price=worth_per_item)
+            await ctx.send(give_user_object(ctx.author, obj_to_give, item_amount))
+    except Exception as e:
+        print(e.with_traceback(None))
+        await ctx.send(f"You need to write the command as {bot.command_prefix}add <item amount> <item's name> <bulk per item> <price per item>")
