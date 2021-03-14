@@ -89,6 +89,20 @@ class Object:
 test_obj = Object(name = "test", bulk = 30, price="69sp")
 test_inv = Inventory(slots = 100)
 
+#############IMPORT ITEM LIST######################################
+
+import csv
+
+item_dict = dict()
+with open("items",'r') as item_file:
+    item_reader = csv.reader(item_file, delimiter = ';')
+    for item_row in item_reader:
+        obj_name = item_row[0].lower().strip()
+        obj_price = item_row[1].lower().strip().replace(',','')
+        obj_bulk = item_row[2].lower().strip()
+        row_obj = Object(name = obj_name, bulk = float(obj_bulk), price=obj_price)
+        item_dict[obj_name] = row_obj
+
 #############START BOT#############################################
 import discord
 from discord.ext import commands
