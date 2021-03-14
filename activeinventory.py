@@ -102,6 +102,12 @@ with open("items",'r') as item_file:
         obj_bulk = item_row[2].lower().strip()
         row_obj = Object(name = obj_name, bulk = float(obj_bulk), price=obj_price)
         item_dict[obj_name] = row_obj
+    print("Imported all items.")
+
+def save_item_list(obj:Object):
+    with open('items', 'a+') as item_file:
+        item_writer = csv.writer(item_file, delimiter = ' ; ')
+        item_writer.writerow([obj.name, obj.price, obj.bulk])
 
 #############START BOT#############################################
 import discord
@@ -211,21 +217,28 @@ async def change_slots(ctx, new_slots:int):
         print(e.with_traceback(None))
         await ctx.send(f"You need to write the command as {bot.command_prefix}slots <new amount of slots>")
 
-@bot.command(name='add')
-async def add_item(ctx, item_amount:int, item_name, bulk_per_item:int, worth_per_item):
+@bot.command(name='register')
+async def add_item_to_item_list(ctx, item_amount, item_name, bulk_per_item, worth_per_item):
     try:
-        if not is_added_user(ctx.author):
-            await ctx.send(f"Please use the {bot.command_prefix}newslots first.")
+        global item_dict
+        item_amount = int(item_amount)
+        bulk_per_item = float(bulk_per_item)
+        item_name = item_name.lower()
+        if item_name in item_dict.keys():
+            await ctx.send(f"{item_name} has already been added.")
         else:
-            obj_to_give = Object(name=item_name, bulk=bulk_per_item, price=worth_per_item)
-            await ctx.send(give_user_object(ctx.author, obj_to_give, item_amount))
+            new_obj = Object(name=item_name,bulk=bulk_per_item,price=worth_per_item)
+            item_dict[item_name] = new_obj
+            save_item_list(new_obj)
+            await ctx.send(f"Added {obj_name} to item list.")
     except Exception as e:
-        print(e.with_traceback(None))
+        print(e)
         await ctx.send(f"You need to write the command as {bot.command_prefix}add <item amount> <item's name> <bulk per item> <price per item>")
 
 @bot.command(name="take")
-async def take_item(ctx, item_amount:int, item_name):
+async def take_item(ctx, item_amount, item_name):
     try:
+        item_amount = int(item_amount)
         if not is_added_user(ctx.author):
             await ctx.send(f"Please use the {bot.command_prefix}newslots first.")
         else:
