@@ -159,10 +159,12 @@ def print_user_inventory(author):
         if author.id == user.id:
             inv_str = ""
             for obj, amount in user.objects.items():
-                inv_str += f"{amount}\t\t\t{obj}\n"
+                inv_str += "{:<8} {:^6} {:^30}\n".format(amount,obj.bulk,str(obj))
             if not inv_str:
                 inv_str += "You have nothing in your inventory 😕\n"
-            inv_str += f"You have {user.get_object_bulk()}/{user.slots}\n"
+            else:
+                inv_str = "{:<8} {:^6} {:^30}\n".format("Amount","Bulk","Item Name") + inv_str
+            inv_str += f"You have {user.get_object_bulk()}/{user.slots} of slots used.\n"
             return inv_str
     return f"{author.nick} was not found."
 
