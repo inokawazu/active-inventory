@@ -159,10 +159,10 @@ def print_user_inventory(author):
         if author.id == user.id:
             inv_str = ""
             for obj, amount in user.objects.items():
-                inv_str += f"{amount}\t\t\t{obj}"
+                inv_str += f"{amount}\t\t\t{obj}\n"
             if not inv_str:
-                return "You have nothing in your inventory 😕"
-            inv_str += f"You have {user.get_object_bulk()}/{user.slots}"
+                inv_str += "You have nothing in your inventory 😕\n"
+            inv_str += f"You have {user.get_object_bulk()}/{user.slots}\n"
             return inv_str
     return f"{author.nick} was not found."
 
