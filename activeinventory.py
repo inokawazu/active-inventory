@@ -40,9 +40,10 @@ class Inventory:
 
 #Character
 class Character(Inventory):
-    def __init__(self, name = "demo", slots=0):
+    def __init__(self, id_num = 0, name = "demo", slots=0):
         Inventory.__init__(self, slots=slots)
         self.name=name
+        self.id = id_num
 
 #Price
 denomination_values = {"cp":1, "sp":10, "ep":50, "gp":100, "pp":1_000}
@@ -91,6 +92,8 @@ test_inv = Inventory(slots = 100)
 #############START BOT#############################################
 import discord
 from discord.ext import commands
+import pickle
+import os
 
 description = '''
 This bot keeps track of player inventories using the active-inventory system.
@@ -98,21 +101,37 @@ This bot keeps track of player inventories using the active-inventory system.
 
 users = []
 
-def add_user(username, new_slots:int):
+def save_users(filename = "users.pickle"):
     global users
-    users.append(Character(name = username, slots = new_slots))
+    with open(filename,'wb') as file:
+        pickle.dump(users, file)
+    print(f"Saved current users to {filename}")
+
+def load_users(filename = "users.pickle"):
+    global users
+    with open(filename,'rb') as file:
+        users = pickle.load(file)
+    print(f"Loaded previous users from {filename}")
+
+#Loads last state if any
+if os.path.isfile("users.pickle"):
+    load_users(filename="users.pickle")
+
+def add_user(author, new_slots:int):
+    global users
+    users.append(Character(name = author.name, id_num=author.id, slots = new_slots))
 
 def is_added_user(author):
     global users
     for user in users:
-        if author == user.name:
+        if author.id == user.id:
             return True
     return False
 
 def change_user_slots(author, new_slots):
     global users
     for user in users:
-        if author == user.name:
+        if author.id == user.id:
             user.slots = new_slots
             return "Success"
     return f"{author.nick} was not found."
@@ -120,7 +139,7 @@ def change_user_slots(author, new_slots):
 def give_user_object(author, obj:Object, amount):
     global users
     for user in users:
-        if author == user.name:
+        if author.id == user.id:
             return user.add_object(obj, amount)
     return f"{author.nick} was not found."
 
@@ -139,6 +158,7 @@ async def on_ready():
 @bot.event
 async def on_command(ctx):
     print(f"{ctx.author} has used {ctx.command} in {ctx.channel}")
+    save_users()
 
 @bot.command(name='slots')
 async def change_slots(ctx, new_slots:int):
