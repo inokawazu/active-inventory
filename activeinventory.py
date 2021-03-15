@@ -210,6 +210,11 @@ async def on_command(ctx):
 
 @bot.command(name='slots')
 async def change_slots(ctx, new_slots:int):
+    """
+    `{prefix}slots <number of slots>`
+
+    Updates the amount of inventory slots you have. If you haven't run this command before, this command makes your character.
+    """
     try:
         if not is_added_user(ctx.author):
             add_user(ctx.author, new_slots)
@@ -222,6 +227,11 @@ async def change_slots(ctx, new_slots:int):
 
 @bot.command(name='register')
 async def add_item_to_item_list(ctx, item_amount, item_name, bulk_per_item, worth_per_item):
+    """
+    `{prefix}register <amount> <item name> <item's bulk> <item's price>`
+
+    Adds new item to global item list.
+    """
     try:
         global item_dict
         item_amount = int(item_amount)
@@ -240,6 +250,11 @@ async def add_item_to_item_list(ctx, item_amount, item_name, bulk_per_item, wort
 
 @bot.command(name="take")
 async def take_item(ctx, item_amount, item_name):
+    """
+    `{prefix}take <amount> <item name>`
+
+    Removes <amount> times of <item name> from your inventory.
+    """
     try:
         item_amount = int(item_amount)
         if not is_added_user(ctx.author):
@@ -252,6 +267,11 @@ async def take_item(ctx, item_amount, item_name):
 
 @bot.command(name="add")
 async def give_item(ctx, item_amount, item_name):
+    """
+    `{prefix}add <amount> <item name>`
+
+    Adds <amount> times of <item name> to your inventory.
+    """
     try:
         item_amount = int(item_amount)
         if not is_added_user(ctx.author):
@@ -264,6 +284,11 @@ async def give_item(ctx, item_amount, item_name):
 
 @bot.command(name="show")
 async def send_inventory(ctx):
+    """
+    `{prefix}show`
+
+    Shows your inventory.
+    """
     try:
         if not is_added_user(ctx.author):
             await ctx.send(f"Please use the {bot.command_prefix}slots first.")
@@ -275,6 +300,11 @@ async def send_inventory(ctx):
 
 @bot.command(name="search")
 async def search_for_item(ctx, query):
+    """
+    `{prefix}search <item>`
+
+    Searches for item in item list.
+    """
     def levenshtein(a, b):
         if not a: return len(b)
         if not b: return len(a)
@@ -288,3 +318,12 @@ async def search_for_item(ctx, query):
     except Exception as e:
         print(e)
         await ctx.send(f"You need to write the command as {bot.command_prefix}search <search term>")
+
+
+# help_text = ""
+# with open("help_command.txt",'r') as help_file:
+#     help_text = help_file.read()
+
+# @bot.command(name="h")
+# async def get_help(ctx):
+#     await ctx.send(help_text.format(prefix=bot.command_prefix))
