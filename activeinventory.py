@@ -156,11 +156,14 @@ def change_user_slots(author, new_slots):
             return "Success"
     return f"{author.nick} was not found."
 
-def give_user_object(author, obj:Object, amount):
+def give_user_object(author, obj_name, amount):
     global users
     for user in users:
         if author.id == user.id:
-            return user.add_object(obj, amount)
+            for item_dict_name, item_dict_obj in item_dict.items():
+                if obj_name.lower() == item_dict_name:
+                    return user.add_object(item_dict_obj, amount)
+            return f"{obj_name} was not found."
     return f"{author.nick} was not found."
 
 def take_user_item(author, item_name, item_amount):
@@ -240,18 +243,30 @@ async def take_item(ctx, item_amount, item_name):
     try:
         item_amount = int(item_amount)
         if not is_added_user(ctx.author):
-            await ctx.send(f"Please use the {bot.command_prefix}newslots first.")
+            await ctx.send(f"Please use the {bot.command_prefix}slots first.")
         else:
             await ctx.send(take_user_item(ctx.author, item_name, item_amount))
     except Exception as e:
         print(e)
         await ctx.send(f"You need to write the command as {bot.command_prefix}take <item amount> <item name>")
 
+@bot.command(name="add")
+async def give_item(ctx, item_amount, item_name):
+    try:
+        item_amount = int(item_amount)
+        if not is_added_user(ctx.author):
+            await ctx.send(f"Please use the {bot.command_prefix}slots first.")
+        else:
+            await ctx.send(give_user_object(ctx.author, item_name, item_amount))
+    except Exception as e:
+        print(e)
+        await ctx.send(f"You need to write the command as {bot.command_prefix}add <item amount> <item name>")
+
 @bot.command(name="show")
 async def send_inventory(ctx):
     try:
         if not is_added_user(ctx.author):
-            await ctx.send(f"Please use the {bot.command_prefix}newslots first.")
+            await ctx.send(f"Please use the {bot.command_prefix}slots first.")
         else:
             await ctx.send(print_user_inventory(ctx.author))
     except Exception as e:
