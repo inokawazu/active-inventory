@@ -272,3 +272,19 @@ async def send_inventory(ctx):
     except Exception as e:
         print(e)
         await ctx.send(f"You need to write the command as {bot.command_prefix}show")
+
+@bot.command(name="search")
+async def search_for_item(ctx, query):
+    def levenshtein(a, b):
+        if not a: return len(b)
+        if not b: return len(a)
+        return min(levenshtein(a[1:], b[1:])+(a[0] != b[0]),
+                   levenshtein(a[1:], b)+1,
+                   levenshtein(a, b[1:])+1)
+    try:
+        search_distance = lambda x : levenshtein(x.lower(),query.lower())
+        search_results = sorted(item_dict.keys(),key=search_distance)[:5]
+        await ctx.send('\n'.join(search_results))
+    except Exception as e:
+        print(e)
+        await ctx.send(f"You need to write the command as {bot.command_prefix}search <search term>")
